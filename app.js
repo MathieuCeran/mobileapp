@@ -27,7 +27,7 @@ function log(message, data = "") {
 // Sur iOS, le système détecte automatiquement si l'app est installée
 function openApp() {
   log("🎯 Ouverture de l'application");
-  
+
   if (isIOS()) {
     log("📱 Redirection vers l'App Store");
     log("💡 iOS ouvrira automatiquement l'app si elle est installée");
@@ -44,27 +44,29 @@ function openApp() {
 document.addEventListener("DOMContentLoaded", () => {
   log("✨ Page chargée avec succès");
   log("📱 Plateforme:", isIOS() ? "iOS" : isAndroid() ? "Android" : "Autre");
-  log("💡 Utilisez le Smart Banner en haut (Safari iOS) pour ouvrir l'app directement");
-  
+  log(
+    "💡 Utilisez le Smart Banner en haut (Safari iOS) pour ouvrir l'app directement"
+  );
+
   // Bouton principal
   const openBtn = document.getElementById("open-app-btn");
   if (openBtn) {
     openBtn.addEventListener("click", openApp);
   }
-  
+
   // Masquer les boutons de test
   const testBtn = document.getElementById("test-mode-btn");
   if (testBtn) testBtn.style.display = "none";
-  
+
   const customBtn = document.getElementById("custom-scheme-btn");
   if (customBtn) customBtn.style.display = "none";
-  
+
   const customInput = document.getElementById("custom-scheme-input");
   if (customInput) customInput.style.display = "none";
-  
+
   const separator = document.querySelector("hr");
   if (separator) separator.style.display = "none";
-  
+
   const customText = document.querySelector("p");
   if (customText) customText.style.display = "none";
 });
