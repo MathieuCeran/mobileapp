@@ -2,22 +2,6 @@ const IOS_STORE_URL = "https://apps.apple.com/fr/app/localresto/id6744366088";
 const ANDROID_STORE_URL =
   "https://play.google.com/store/apps/details?id=com.appyourself.suite.local&pli=1";
 
-// Liste de tous les schemes possibles à tester
-const POSSIBLE_SCHEMES = [
-  "localresto://",
-  "com.appyourself.suite.local://",
-  "appyourself://",
-  "suite.local://",
-  "appsuite://",
-  "appyourselflocal://",
-];
-
-// Vérifier si l'app utilise des Universal Links
-const UNIVERSAL_LINK = "https://localresto.app/open"; // À vérifier avec le dev de l'app
-
-let currentSchemeIndex = 0;
-let testMode = false;
-
 function isIOS() {
   return /iphone|ipad|ipod/i.test(navigator.userAgent);
 }
@@ -39,127 +23,48 @@ function log(message, data = "") {
   console.log(`${timestamp}: ${message}`, data);
 }
 
-function testNextScheme() {
-  if (currentSchemeIndex >= POSSIBLE_SCHEMES.length) {
-    log("❌ Aucun scheme testé n'a fonctionné");
-    log("⏭️ Redirection vers l'App Store dans 2 secondes...");
-    setTimeout(() => {
-      location.replace(IOS_STORE_URL);
-    }, 2000);
-    return;
-  }
-
-  const scheme = POSSIBLE_SCHEMES[currentSchemeIndex];
-  log(
-    `🔍 Test ${currentSchemeIndex + 1}/${POSSIBLE_SCHEMES.length}: ${scheme}`
-  );
-
-  // Méthode rapide avec webkitHidden
-  location.replace(scheme);
-
-  setTimeout(() => {
-    if (!document.webkitHidden) {
-      log(`❌ Scheme ne fonctionne pas`);
-      currentSchemeIndex++;
-      setTimeout(() => testNextScheme(), 500);
-    } else {
-      log(`✅ SUCCESS! L'app s'est ouverte avec: ${scheme}`);
-    }
-  }, 25);
-}
-
-function tryUniversalLink() {
-  log("🌐 Tentative avec Universal Link");
-  log(`📱 URL: ${UNIVERSAL_LINK}`);
-
-  // Créer un lien invisible et le cliquer
-  const a = document.createElement("a");
-  a.href = UNIVERSAL_LINK;
-  a.style.display = "none";
-  document.body.appendChild(a);
-  a.click();
-
-  setTimeout(() => {
-    document.body.removeChild(a);
-    if (!document.webkitHidden) {
-      log("❌ Universal Link ne fonctionne pas");
-      log("⏭️ Redirection App Store...");
-      setTimeout(() => location.replace(IOS_STORE_URL), 1000);
-    } else {
-      log("✅ App ouverte avec Universal Link!");
-    }
-  }, 100);
-}
-
-function openMobileApp() {
-  log("🎯 Fonction appelée");
-  log("📱 Device:", isIOS() ? "iOS" : isAndroid() ? "Android" : "Autre");
-
+// Solution simple : rediriger vers l'App Store
+// Sur iOS, le système détecte automatiquement si l'app est installée
+function openApp() {
+  log("🎯 Ouverture de l'application");
+  
   if (isIOS()) {
-    if (testMode) {
-      log("🧪 Mode test - Test de tous les schemes");
-      currentSchemeIndex = 0;
-      testNextScheme();
-    } else {
-      // Essayer l'Universal Link en premier (recommandé par Apple)
-      tryUniversalLink();
-    }
+    log("📱 Redirection vers l'App Store");
+    log("💡 iOS ouvrira automatiquement l'app si elle est installée");
+    window.location.href = IOS_STORE_URL;
   } else if (isAndroid()) {
-    log("🤖 Android - Redirection Play Store");
-    location.replace(ANDROID_STORE_URL);
+    log("🤖 Redirection vers le Play Store");
+    window.location.href = ANDROID_STORE_URL;
   } else {
-    log("❌ Device non supporté");
+    log("❌ Plateforme non supportée");
   }
-}
-
-function tryCustomScheme() {
-  const input = document.getElementById("custom-scheme-input");
-  const customScheme = input.value.trim();
-
-  if (!customScheme) {
-    log("❌ Veuillez entrer un scheme");
-    return;
-  }
-
-  log(`🔧 Test du scheme personnalisé: ${customScheme}`);
-  location.replace(customScheme);
-
-  setTimeout(() => {
-    if (!document.webkitHidden) {
-      log("❌ Ce scheme ne fonctionne pas");
-    } else {
-      log(`✅ SUCCESS! Ce scheme fonctionne: ${customScheme}`);
-      log("⭐ Copiez ce scheme pour votre code!");
-    }
-  }, 25);
 }
 
 // Attendre que le DOM soit chargé
 document.addEventListener("DOMContentLoaded", () => {
-  log("✨ Page chargée");
-  log("📱 UserAgent:", navigator.userAgent);
-
-  // Activer le mode test
-  const testBtn = document.getElementById("test-mode-btn");
-  if (testBtn) {
-    testBtn.addEventListener("click", () => {
-      testMode = true;
-      log("🧪 MODE TEST ACTIVÉ");
-      testBtn.style.background = "#16a34a";
-      testBtn.textContent = "✅ Mode test activé";
-      testBtn.disabled = true;
-    });
-  }
-
-  // Ouvrir l'app
+  log("✨ Page chargée avec succès");
+  log("📱 Plateforme:", isIOS() ? "iOS" : isAndroid() ? "Android" : "Autre");
+  log("💡 Utilisez le Smart Banner en haut (Safari iOS) pour ouvrir l'app directement");
+  
+  // Bouton principal
   const openBtn = document.getElementById("open-app-btn");
   if (openBtn) {
-    openBtn.addEventListener("click", openMobileApp);
+    openBtn.addEventListener("click", openApp);
   }
-
-  // Test scheme personnalisé
+  
+  // Masquer les boutons de test
+  const testBtn = document.getElementById("test-mode-btn");
+  if (testBtn) testBtn.style.display = "none";
+  
   const customBtn = document.getElementById("custom-scheme-btn");
-  if (customBtn) {
-    customBtn.addEventListener("click", tryCustomScheme);
-  }
+  if (customBtn) customBtn.style.display = "none";
+  
+  const customInput = document.getElementById("custom-scheme-input");
+  if (customInput) customInput.style.display = "none";
+  
+  const separator = document.querySelector("hr");
+  if (separator) separator.style.display = "none";
+  
+  const customText = document.querySelector("p");
+  if (customText) customText.style.display = "none";
 });
