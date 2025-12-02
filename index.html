@@ -2,9 +2,45 @@
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
-    <title>Test ouverture app mobile</title>
+    <title>LocalResto - Ouvrir l'application</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Découvrez les meilleurs restaurants locaux" />
     <meta name="apple-itunes-app" content="app-id=6744366088">
+    
+    <!-- Open Graph pour le partage -->
+    <meta property="og:title" content="LocalResto" />
+    <meta property="og:description" content="Découvrez les meilleurs restaurants locaux" />
+    <meta property="og:url" content="https://votredomaine.com" />
+    
+    <script type="text/javascript">
+      // Redirection automatique au chargement
+      document.addEventListener('DOMContentLoaded', function() {
+        var userAgent = navigator.userAgent || navigator.vendor || window.opera;
+        
+        // Détecter iOS
+        if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+          // Essayer d'ouvrir l'app avec un scheme custom
+          var appScheme = 'com.appyourself.suite.local://';
+          window.location.href = appScheme;
+          
+          // Si l'app ne s'ouvre pas après 1 seconde, aller vers l'App Store
+          setTimeout(function() {
+            if (!document.webkitHidden) {
+              window.location.href = 'https://apps.apple.com/fr/app/localresto/id6744366088';
+            }
+          }, 1000);
+        } 
+        // Détecter Android
+        else if (/android/i.test(userAgent)) {
+          window.location.href = 'https://play.google.com/store/apps/details?id=com.appyourself.suite.local&pli=1';
+        } 
+        // Autres plateformes
+        else {
+          console.log('Plateforme non mobile détectée');
+        }
+      });
+    </script>
+    
     <style>
       body {
         font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
@@ -14,19 +50,45 @@
         justify-content: center;
         min-height: 100vh;
         background: #f5f5f5;
+        margin: 0;
       }
 
       .card {
         background: white;
-        padding: 20px;
+        padding: 40px;
         border-radius: 12px;
         box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
         text-align: center;
-        max-width: 320px;
+        max-width: 400px;
+      }
+
+      h1 {
+        color: #2563eb;
+        margin-bottom: 20px;
+      }
+
+      p {
+        color: #666;
+        line-height: 1.6;
+      }
+
+      .spinner {
+        border: 3px solid #f3f3f3;
+        border-top: 3px solid #2563eb;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+        margin: 20px auto;
+      }
+
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
       }
 
       button {
-        padding: 12px 20px;
+        padding: 12px 24px;
         border-radius: 999px;
         border: none;
         cursor: pointer;
@@ -34,81 +96,26 @@
         font-weight: 600;
         background: #2563eb;
         color: white;
-        width: 100%;
-        margin-bottom: 8px;
+        margin-top: 20px;
       }
 
       button:active {
         transform: scale(0.98);
       }
-
-      input {
-        padding: 10px;
-        border: 2px solid #e5e7eb;
-        border-radius: 8px;
-        width: 100%;
-        font-size: 14px;
-        margin-bottom: 8px;
-        box-sizing: border-box;
-      }
-
-      small {
-        display: block;
-        margin-top: 12px;
-        color: #555;
-        font-size: 13px;
-      }
     </style>
   </head>
   <body>
     <div class="card">
-      <h1>Test ouverture app</h1>
-
-      <button
-        id="test-mode-btn"
-        style="background: #dc2626; margin-bottom: 10px"
-      >
-        🧪 Activer le mode test
-      </button>
-
-      <button id="open-app-btn">Ouvrir l'application</button>
-      
-      <hr style="margin: 20px 0; border: none; border-top: 1px solid #e5e7eb;">
-      
-      <p style="font-size: 13px; color: #666; margin: 10px 0;">
-        Ou testez un scheme personnalisé :
+      <h1>🍽️ LocalResto</h1>
+      <div class="spinner"></div>
+      <p>Redirection vers l'application...</p>
+      <p style="font-size: 14px; color: #999; margin-top: 20px;">
+        Si la redirection ne fonctionne pas, cliquez sur le bouton ci-dessous
       </p>
-      
-      <input 
-        id="custom-scheme-input" 
-        type="text" 
-        placeholder="Ex: localresto://" 
-        value="localresto://"
-      />
-      
-      <button id="custom-scheme-btn" style="background: #7c3aed;">
-        🔍 Tester ce scheme
+      <button onclick="window.location.href='https://apps.apple.com/fr/app/localresto/id6744366088'">
+        Ouvrir l'App Store
       </button>
-
-      <div
-        id="log-output"
-        style="
-          margin-top: 20px;
-          max-height: 300px;
-          overflow-y: auto;
-          text-align: left;
-          font-size: 12px;
-          background: #f9f9f9;
-          padding: 10px;
-          border-radius: 8px;
-          font-family: monospace;
-        "
-      >
-        <div style="padding: 5px; color: #666">📋 Logs d'ouverture...</div>
-      </div>
     </div>
-
-    <script src="app.js"></script>
   </body>
 </html>
           background: #f9f9f9;
