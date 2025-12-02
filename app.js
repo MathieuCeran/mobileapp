@@ -71,14 +71,14 @@ function testNextScheme() {
 function tryUniversalLink() {
   log("🌐 Tentative avec Universal Link");
   log(`📱 URL: ${UNIVERSAL_LINK}`);
-  
+
   // Créer un lien invisible et le cliquer
-  const a = document.createElement('a');
+  const a = document.createElement("a");
   a.href = UNIVERSAL_LINK;
-  a.style.display = 'none';
+  a.style.display = "none";
   document.body.appendChild(a);
   a.click();
-  
+
   setTimeout(() => {
     document.body.removeChild(a);
     if (!document.webkitHidden) {
@@ -115,15 +115,15 @@ function openMobileApp() {
 function tryCustomScheme() {
   const input = document.getElementById("custom-scheme-input");
   const customScheme = input.value.trim();
-  
+
   if (!customScheme) {
     log("❌ Veuillez entrer un scheme");
     return;
   }
-  
+
   log(`🔧 Test du scheme personnalisé: ${customScheme}`);
   location.replace(customScheme);
-  
+
   setTimeout(() => {
     if (!document.webkitHidden) {
       log("❌ Ce scheme ne fonctionne pas");
@@ -156,7 +156,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (openBtn) {
     openBtn.addEventListener("click", openMobileApp);
   }
-  
+
   // Test scheme personnalisé
   const customBtn = document.getElementById("custom-scheme-btn");
   if (customBtn) {
