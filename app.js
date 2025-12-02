@@ -8,7 +8,12 @@ const POSSIBLE_SCHEMES = [
   "com.appyourself.suite.local://",
   "appyourself://",
   "suite.local://",
+  "appsuite://",
+  "appyourselflocal://",
 ];
+
+// Vérifier si l'app utilise des Universal Links
+const UNIVERSAL_LINK = "https://localresto.app/open"; // À vérifier avec le dev de l'app
 
 let currentSchemeIndex = 0;
 let testMode = false;
@@ -63,6 +68,29 @@ function testNextScheme() {
   }, 25);
 }
 
+function tryUniversalLink() {
+  log("🌐 Tentative avec Universal Link");
+  log(`📱 URL: ${UNIVERSAL_LINK}`);
+  
+  // Créer un lien invisible et le cliquer
+  const a = document.createElement('a');
+  a.href = UNIVERSAL_LINK;
+  a.style.display = 'none';
+  document.body.appendChild(a);
+  a.click();
+  
+  setTimeout(() => {
+    document.body.removeChild(a);
+    if (!document.webkitHidden) {
+      log("❌ Universal Link ne fonctionne pas");
+      log("⏭️ Redirection App Store...");
+      setTimeout(() => location.replace(IOS_STORE_URL), 1000);
+    } else {
+      log("✅ App ouverte avec Universal Link!");
+    }
+  }, 100);
+}
+
 function openMobileApp() {
   log("🎯 Fonction appelée");
   log("📱 Device:", isIOS() ? "iOS" : isAndroid() ? "Android" : "Autre");
@@ -73,19 +101,8 @@ function openMobileApp() {
       currentSchemeIndex = 0;
       testNextScheme();
     } else {
-      // Mode normal - essayer d'ouvrir l'app directement
-      const scheme = "com.appyourself.suite.local://";
-      log(`📱 Tentative avec: ${scheme}`);
-
-      location.replace(scheme);
-      setTimeout(() => {
-        if (!document.webkitHidden) {
-          log("⏭️ Redirection App Store...");
-          location.replace(IOS_STORE_URL);
-        } else {
-          log("✅ App ouverte!");
-        }
-      }, 25);
+      // Essayer l'Universal Link en premier (recommandé par Apple)
+      tryUniversalLink();
     }
   } else if (isAndroid()) {
     log("🤖 Android - Redirection Play Store");
@@ -93,6 +110,28 @@ function openMobileApp() {
   } else {
     log("❌ Device non supporté");
   }
+}
+
+function tryCustomScheme() {
+  const input = document.getElementById("custom-scheme-input");
+  const customScheme = input.value.trim();
+  
+  if (!customScheme) {
+    log("❌ Veuillez entrer un scheme");
+    return;
+  }
+  
+  log(`🔧 Test du scheme personnalisé: ${customScheme}`);
+  location.replace(customScheme);
+  
+  setTimeout(() => {
+    if (!document.webkitHidden) {
+      log("❌ Ce scheme ne fonctionne pas");
+    } else {
+      log(`✅ SUCCESS! Ce scheme fonctionne: ${customScheme}`);
+      log("⭐ Copiez ce scheme pour votre code!");
+    }
+  }, 25);
 }
 
 // Attendre que le DOM soit chargé
@@ -116,5 +155,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const openBtn = document.getElementById("open-app-btn");
   if (openBtn) {
     openBtn.addEventListener("click", openMobileApp);
+  }
+  
+  // Test scheme personnalisé
+  const customBtn = document.getElementById("custom-scheme-btn");
+  if (customBtn) {
+    customBtn.addEventListener("click", tryCustomScheme);
   }
 });
