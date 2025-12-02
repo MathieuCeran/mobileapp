@@ -34,17 +34,16 @@ function openMobileApp() {
     setTimeout(() => {
       document.removeEventListener("visibilitychange", checkAppOpened);
       document.removeEventListener("webkitvisibilitychange", checkAppOpened);
-      
+
       if (!appOpened && !document.hidden) {
         window.location.href = IOS_STORE_URL;
       }
-      
+
       // Nettoyer l'iframe
       if (iframe.parentNode) {
         iframe.parentNode.removeChild(iframe);
       }
     }, 2500);
-    
   } else if (isAndroid()) {
     // Pour Android, utiliser Intent avec fallback
     const intentUrl = `intent://home#Intent;scheme=myapp;package=com.appyourself.suite.local;end`;
