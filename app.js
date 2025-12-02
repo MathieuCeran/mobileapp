@@ -16,36 +16,35 @@ function openMobileApp() {
   if (isIOS()) {
     // Tenter d'ouvrir l'app avec le scheme
     window.location.href = APP_SCHEME;
-    
+
     // Vérifier si l'app s'est ouverte via la visibilité de la page
     let appOpened = false;
-    
+
     const checkAppOpened = () => {
       if (document.hidden || document.webkitHidden) {
         appOpened = true;
       }
     };
-    
+
     document.addEventListener("visibilitychange", checkAppOpened);
     document.addEventListener("webkitvisibilitychange", checkAppOpened);
-    
+
     // Si après 2.5 secondes l'app ne s'est pas ouverte, aller au store
     setTimeout(() => {
       document.removeEventListener("visibilitychange", checkAppOpened);
       document.removeEventListener("webkitvisibilitychange", checkAppOpened);
-      
+
       if (!appOpened && !document.hidden) {
         window.location.href = IOS_STORE_URL;
       }
     }, 2500);
-    
   } else if (isAndroid()) {
     // Pour Android, utiliser Intent avec fallback
     const intentUrl = `intent://home#Intent;scheme=myapp;package=com.appyourself.suite.local;end`;
-    
+
     // Essayer d'abord l'Intent
     window.location.href = intentUrl;
-    
+
     // Fallback vers le Play Store si l'app ne s'ouvre pas
     setTimeout(() => {
       if (!document.hidden) {
