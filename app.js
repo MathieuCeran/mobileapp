@@ -13,7 +13,7 @@ const POSSIBLE_SCHEMES = [
   "appyourself://home",
   "suite.local://",
   "myapp://",
-  "myapp://home"
+  "myapp://home",
 ];
 
 let currentSchemeIndex = 0;
@@ -61,15 +61,9 @@ function testNextScheme() {
     }
   };
 
-// Activer/désactiver le mode test
-document.getElementById("test-mode-btn").addEventListener("click", () => {
-  testMode = true;
-  log("🧪 MODE TEST ACTIVÉ - Cliquez sur 'Ouvrir l'application' pour tester tous les schemes");
-});
-
-document
-  .getElementById("open-app-btn")
-  .addEventListener("click", openMobileApp);ened, { once: true });
+  document.addEventListener("visibilitychange", checkAppOpened, { once: true });
+  document.addEventListener("pagehide", checkAppOpened, { once: true });
+  window.addEventListener("blur", checkAppOpened, { once: true });
 
   try {
     window.location.href = scheme;
@@ -92,6 +86,10 @@ document
 }
 
 function openMobileApp() {
+  log("🎯 Fonction openMobileApp appelée");
+  log("📱 Plateforme:", isIOS() ? "iOS" : isAndroid() ? "Android" : "Inconnue");
+  log("🧪 Mode test:", testMode ? "Activé" : "Désactivé");
+
   if (isIOS()) {
     if (testMode) {
       log("🚀 Mode test activé - Test de tous les schemes possibles");
@@ -99,9 +97,9 @@ function openMobileApp() {
       testNextScheme();
     } else {
       // Mode normal - utilisez le scheme qui fonctionne une fois trouvé
-      const workingScheme = POSSIBLE_SCHEMES[0]; // Changez l'index quand vous trouvez le bon
+      const workingScheme = POSSIBLE_SCHEMES[0];
       log(`📱 Tentative d'ouverture avec:`, workingScheme);
-      
+
       let appOpened = false;
 
       const checkAppOpened = () => {
@@ -109,7 +107,9 @@ function openMobileApp() {
         log("✅ App ouverte avec succès!");
       };
 
-      document.addEventListener("visibilitychange", checkAppOpened, { once: true });
+      document.addEventListener("visibilitychange", checkAppOpened, {
+        once: true,
+      });
       document.addEventListener("pagehide", checkAppOpened, { once: true });
       window.addEventListener("blur", checkAppOpened, { once: true });
 
@@ -142,9 +142,29 @@ function openMobileApp() {
         window.location.href = ANDROID_STORE_URL;
       }
     }, 2000);
+  } else {
+    log("❌ Plateforme non supportée");
   }
 }
 
+// Activer le mode test
+document.getElementById("test-mode-btn").addEventListener("click", () => {
+  testMode = true;
+  log("🧪 MODE TEST ACTIVÉ");
+  log(
+    "👉 Cliquez maintenant sur 'Ouvrir l'application' pour tester tous les schemes"
+  );
+  const btn = document.getElementById("test-mode-btn");
+  btn.style.background = "#16a34a";
+  btn.textContent = "✅ Mode test activé";
+  btn.disabled = true;
+});
+
+// Ouvrir l'app
 document
   .getElementById("open-app-btn")
   .addEventListener("click", openMobileApp);
+
+// Log initial
+log("✨ Page chargée avec succès");
+log("📱 User Agent:", navigator.userAgent);
