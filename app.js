@@ -12,12 +12,13 @@ function isAndroid() {
 }
 
 function openMobileApp() {
-  // Pour iOS, on utilise une approche plus fiable
   if (isIOS()) {
-    // Tenter d'ouvrir l'app avec le scheme
-    window.location.href = APP_SCHEME;
+    // Sur iOS, créer un iframe caché pour éviter la popup de confirmation
+    const iframe = document.createElement("iframe");
+    iframe.style.display = "none";
+    iframe.src = APP_SCHEME;
+    document.body.appendChild(iframe);
 
-    // Vérifier si l'app s'est ouverte via la visibilité de la page
     let appOpened = false;
 
     const checkAppOpened = () => {
@@ -33,16 +34,20 @@ function openMobileApp() {
     setTimeout(() => {
       document.removeEventListener("visibilitychange", checkAppOpened);
       document.removeEventListener("webkitvisibilitychange", checkAppOpened);
-
+      
       if (!appOpened && !document.hidden) {
         window.location.href = IOS_STORE_URL;
       }
+      
+      // Nettoyer l'iframe
+      if (iframe.parentNode) {
+        iframe.parentNode.removeChild(iframe);
+      }
     }, 2500);
+    
   } else if (isAndroid()) {
     // Pour Android, utiliser Intent avec fallback
     const intentUrl = `intent://home#Intent;scheme=myapp;package=com.appyourself.suite.local;end`;
-
-    // Essayer d'abord l'Intent
     window.location.href = intentUrl;
 
     // Fallback vers le Play Store si l'app ne s'ouvre pas
